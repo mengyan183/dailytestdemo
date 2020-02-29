@@ -17,9 +17,32 @@ public class FirstTest {
 
     public static void main(String[] args) {
 //        startThread();
-        startCoroutine();
+//        startCoroutine();
 
     }
+
+    /**
+     * 证明gc作为守护线程,且gc运行时间;而且主线程结束后,守护线程并非立即结束,而是也有缓冲时间的
+     */
+    static void testGcDaemonThread() {
+        class Demo {
+
+            @Override
+            public void finalize() {
+                System.out.println(Thread.currentThread().isDaemon());//验证gc线程是不是daemon
+                System.out.println("垃圾被清扫了");
+            }
+        }
+        for (int i = 0; i < 10000000; i++) {
+            new Demo();
+        }
+        for (int i = 0; i < 100000; i++) {
+            System.out.println("我是主线程执行");
+        }
+        System.out.println("main:" + Thread.currentThread().isDaemon());//验证主线程是不是daemon
+        System.out.println("主线程死亡");
+    }
+
 
     static void startCoroutine() {
         long start = System.nanoTime();
