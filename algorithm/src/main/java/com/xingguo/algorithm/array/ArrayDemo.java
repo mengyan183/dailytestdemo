@@ -15,9 +15,11 @@ public class ArrayDemo {
     public static void main(String[] args) {
         int[] intArray = new int[]{4, 2, 3, 5, 9, 6};
         // 预期结果为 -1
-        System.out.println(sentryFind(intArray, 1));
+        System.out.println(sentryFindByValue(intArray, 1));
+        System.out.println(findByValue(intArray, 1));
         // 预期结果为 4
-        System.out.println(sentryFind(intArray, 9));
+        System.out.println(sentryFindByValue(intArray, 9));
+        System.out.println(findByValue(intArray, 9));
     }
 
     public static void test() {
@@ -27,15 +29,39 @@ public class ArrayDemo {
         System.out.println(array[1][0] == 2);
     }
 
+    /**
+     * 查询元素在数组中所在索引位置
+     * 时间复杂度为O(n),空间复杂度为O(1)
+     *
+     * @param array 数组
+     * @param value 值
+     * @return 索引值
+     */
+    public static int findByValue(int[] array, int value) {
+        if (array == null || array.length == 0) {
+            return -1;
+        }
+        int index = 0;
+        int length = array.length;
+        // 遍历数组,获取值相等的数组中索引位置
+        while (index < length) {
+            if (array[index] == value) {
+                return index;
+            }
+            ++index;
+        }
+        return -1;
+    }
 
     /**
      * 利用哨兵实现查找指定元素在数组中的索引位置
      * 使用哨兵保证了数组查询不会越界
+     * 时间复杂度为O(n),空间复杂度为O(1)
      *
      * @param array 数组
      * @param value 元素值
      */
-    public static int sentryFind(int[] array, int value) {
+    public static int sentryFindByValue(int[] array, int value) {
         if (array == null || array.length == 0) {
             return -1;
         }
@@ -48,11 +74,8 @@ public class ArrayDemo {
         array[length - 1] = value;
 
         int sentry = 0;
-        // 遍历数组,获取值相等的数组中索引位置
-        while (sentry < length) {
-            if (array[sentry] == value) {
-                break;
-            }
+        // 遍历数组,获取值相等的数组中索引位置,和findByValue相对比,少了索引和长度的大小对比,性能还是有提升的
+        while (array[sentry] != value) {
             ++sentry;
         }
         // 将初始数组中的最后一个值重新保存到原有数组索引所在位置
