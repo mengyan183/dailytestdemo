@@ -74,7 +74,7 @@ public class ArrayDemo {
         array[length - 1] = value;
 
         int sentry = 0;
-        // 遍历数组,获取值相等的数组中索引位置,和findByValue相对比,少了索引和长度的大小对比,性能还是有提升的
+        // 遍历数组,获取值相等的数组中索引位置,和findByValue相对比,少了索引和长度的大小对比,性能还是有提升的,而且保证了数组查询绝对不会越界的问题
         while (array[sentry] != value) {
             ++sentry;
         }
