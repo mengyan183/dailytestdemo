@@ -19,7 +19,7 @@ public class CircleArrayQueue {
     // head
     private int head;
 
-    // tail , 当队列未满时,tail 指向数组中下一个元素为空的索引;反之 则 tail = n;
+    // tail , 当队列未满时,tail 指向数组中下一个元素为空的索引;反之 则 tail = head 且 tail的下一个索引位置元素不为空;
     private int tail;
 
     public CircleArrayQueue(int n) {

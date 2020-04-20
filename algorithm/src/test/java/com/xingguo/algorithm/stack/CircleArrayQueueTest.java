@@ -45,5 +45,23 @@ public class CircleArrayQueueTest {
             }
             System.out.println(dequeue);
         }
+
+        System.out.println("全部入队");
+        int numAgain = 0;
+        while (true) {
+            boolean b = circleArrayQueue.enQueue(String.valueOf(numAgain++));
+            if (!b) {
+                break;
+            }
+        }
+
+        System.out.println("全部出队");
+        while (true) {
+            String dequeue = circleArrayQueue.dequeue();
+            if (dequeue == null) {
+                break;
+            }
+            System.out.println(dequeue);
+        }
     }
 }
