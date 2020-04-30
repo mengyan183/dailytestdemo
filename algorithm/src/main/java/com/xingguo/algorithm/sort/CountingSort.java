@@ -75,11 +75,11 @@ public class CountingSort {
         if (length == 0) {
             return null;
         }
-        for (int i = 0; i < length; i++) {
+        for (int value : array) {
             if (flag) {
-                bucket[array[i] - min]++;
+                bucket[value - min]++;
             } else {
-                bucket[array[i]]++;
+                bucket[value]++;
             }
 
         }
