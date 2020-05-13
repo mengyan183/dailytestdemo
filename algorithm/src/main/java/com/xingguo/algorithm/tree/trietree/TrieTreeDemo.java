@@ -41,6 +41,7 @@ public class TrieTreeDemo {
     }
 
     private TrieTree root = new TrieTree('/');
+    // TODO 插入数据时合并非最终状态的叶子节点
 
     /**
      * 插入字符串
