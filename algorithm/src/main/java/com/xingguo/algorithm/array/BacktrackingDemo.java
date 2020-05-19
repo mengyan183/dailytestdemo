@@ -8,6 +8,7 @@ import java.util.Random;
 /**
  * BacktrackingDemo
  * 回溯算法
+ * //TODO 深度优先搜索、八皇后、0-1 背包问题、图的着色、旅行商问题、数独、全排列、正则表达式匹配
  *
  * @author guoxing
  * @date 2020/5/14 4:41 PM
@@ -19,18 +20,23 @@ public class BacktrackingDemo {
         new BacktrackingDemo().yesOrNoPackage();
     }
 
+
     /**
      * 0-1背包问题
      */
     public void yesOrNoPackage() {
+        int length = 10;
         // 10个物品
-        int[] weights = new int[10];
+        int[] weights = new int[length];
         Random random = new Random();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < length; i++) {
             weights[i] = random.nextInt(100) + 1;
         }
-        int[] possible = new int[10];
-        pushIntoPackage(0, 0, weights, 10, 100, possible);
+        int packageLimitWeight = 100;
+        int[] possible = new int[length];
+        // 备忘录
+        boolean[][] memory = new boolean[length][packageLimitWeight + 1];
+        pushIntoPackage(0, 0, weights, length, packageLimitWeight, possible, memory);
     }
 
     /**
@@ -40,33 +46,44 @@ public class BacktrackingDemo {
      * @param length             数组长度
      * @param packageLimitWeight 背包限制重量
      * @param possible
+     * @param memory
      */
-    public void pushIntoPackage(int index, int totalWeight, int[] items, int length, int packageLimitWeight, int[] possible) {
+    public void pushIntoPackage(int index, int totalWeight, int[] items, int length, int packageLimitWeight, int[] possible, boolean[][] memory) {
         // 背包内重量等于 背包限制重量 或 索引
         if (totalWeight == packageLimitWeight || index == length) {
             // 返回当前背包内的总重量
             System.out.println(totalWeight);
             System.out.printf("[");
-            for (int i = 0; i < 10; i++) {
-                System.out.printf(possible[i] + (i == 9 ? "" : ","));
+            for (int i = 0; i < length; i++) {
+                System.out.printf(possible[i] + (i == length - 1 ? "" : ","));
             }
             System.out.printf("]");
             System.out.println();
             return;
         }
+        /**
+         * 我们可以把物品依次排列，整个问题就分解为了 n 个阶段，每个阶段对应一个物品怎么选择。
+         * 先对第一个物品进行处理，选择装进去或者不装进去，然后再递归地处理剩下的物品
+         */
         // 不放置物品, 当全部的物品都选择不放置时
         possible[index] = 0;
-        pushIntoPackage(index + 1, totalWeight, items, length, packageLimitWeight, possible);
+        // 避免重复计算
+        if (memory[index][totalWeight]) {
+            return;
+        }
+        memory[index][totalWeight] = true;
+        pushIntoPackage(index + 1, totalWeight, items, length, packageLimitWeight, possible, memory);
         // 递归回溯 当index选择不放置时,其他的索引所有可能放置条件
         if (totalWeight + items[index] <= packageLimitWeight) {// 在背包限制范围内放置物品
             possible[index] = items[index];
-            pushIntoPackage(index + 1, totalWeight + items[index], items, length, packageLimitWeight, possible);
+            pushIntoPackage(index + 1, totalWeight + items[index], items, length, packageLimitWeight, possible, memory);
         }
     }
 
 
     /**
      * 8皇后问题实际就是在8*8的二维数组中满足 垂直/水平/对角线上不会存在重复的元素
+     * TODO
      */
     public void cal8queensV2() {
         // 棋盘
