@@ -3,9 +3,15 @@
  */
 package com.xingguo.algorithm.array;
 
+import sun.jvm.hotspot.utilities.Assert;
+
 /**
  * DynamicProgrammingDemo
  * 动态规划
+ * <p>
+ * //TODO : 淘宝的“双十一”购物节有各种促销活动，比如“满 200 元减 50 元”。假设购物车中有 n 个（n>100）想买的商品，希望从里面选几个，在凑够满减条件的前提下，让选出来的商品价格总和最大程度地接近满减条件（200 元）
+ * // TODO : https://time.geekbang.org/column/article/74788 杨辉三角问题
+ * //TODO : 硬币问题 :假设我们有几种不同币值的硬币 v1，v2，……，vn（单位是元）。如果我们要支付 w 元，求最少需要多少个硬币。比如，我们有 3 种不同的硬币，1 元、3 元、5 元，我们要支付 9 元，最少需要 3 个硬币（3 个 3 元的硬币）
  *
  * @author guoxing
  * @date 2020/5/15 1:40 PM
@@ -24,11 +30,70 @@ public class DynamicProgrammingDemo {
 //        int i1 = zeroAndOnePackage.dynamicProgrammingV2();
 //        System.out.println("塞入物品的最大总重量为" + i + "时间为: " + (System.currentTimeMillis() - l));
 
-        ZeroAndOnePackageWithValue zeroAndOnePackageWithValue = new ZeroAndOnePackageWithValue();
+//        ZeroAndOnePackageWithValue zeroAndOnePackageWithValue = new ZeroAndOnePackageWithValue();
 //        zeroAndOnePackageWithValue.backTracking(0, 0, 0);
-        int maxValue = zeroAndOnePackageWithValue.dynamicProgramming();
-        System.out.println("在不超过背包容量时塞入物品的最大价值为:" + maxValue);
+//        int maxValue = zeroAndOnePackageWithValue.dynamicProgramming();
+//        System.out.println("在不超过背包容量时塞入物品的最大价值为:" + maxValue);
+
+
+        int minDist = new Matrix().minDist();
+        System.out.println("最短路径为" + minDist);
+        int minDistDP = new Matrix().minDistDP();
+        Assert.that(minDist == minDistDP, "答案不同,minDist方法有误");
     }
+
+    static class Matrix {
+        // 一个4*4二维数组 每个位置的路径长度
+        private int[][] pathArray = new int[][]{{1, 3, 5, 9}, {2, 1, 3, 4}, {5, 2, 6, 7}, {6, 8, 4, 3}};
+        // 矩阵的长度
+        private int length = 4;
+        // 矩阵的宽度
+        private int width = 4;
+
+        // 获取 从[0][0] 到 [length][width]的最短路径
+        public int minDist() {
+            int[][] states = new int[length][width];
+            states[0][0] = pathArray[0][0];
+            // 初始化第一行状态
+            for (int i = 1; i < length; i++) {
+                states[0][i] = states[0][i - 1] + pathArray[0][i];
+            }
+            // 初始化第一列状态
+            for (int j = 1; j < width; j++) {
+                states[j][0] = states[j - 1][0] + pathArray[j][0];
+            }
+            for (int i = 1; i < length; i++) {
+                for (int j = 1; j < width; j++) {
+                    states[i][j] = Math.min(states[i - 1][j], states[i][j - 1]) + pathArray[i][j];
+                }
+            }
+            return states[length - 1][width - 1];
+        }
+
+        public int minDistDP() {
+            int n = 4;
+            int[][] matrix = pathArray;
+            int[][] states = new int[n][n];
+            int sum = 0;
+            for (int j = 0; j < n; ++j) { // 初始化states的第一行数据
+                sum += matrix[0][j];
+                states[0][j] = sum;
+            }
+            sum = 0;
+            for (int i = 0; i < n; ++i) { // 初始化states的第一列数据
+                sum += matrix[i][0];
+                states[i][0] = sum;
+            }
+            for (int i = 1; i < n; ++i) {
+                for (int j = 1; j < n; ++j) {
+                    states[i][j] =
+                            matrix[i][j] + Math.min(states[i][j - 1], states[i - 1][j]);
+                }
+            }
+            return states[n - 1][n - 1];
+        }
+    }
+
 
     /**
      * 0-1背包问题 升级版 ,商品存在价值
