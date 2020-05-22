@@ -40,10 +40,166 @@ public class DynamicProgrammingDemo {
 //        System.out.println("最短路径为" + minDist);
 //        int minDistDP = new Matrix().minDistDP();
 //        Assert.that(minDist == minDistDP, "答案不同,minDist方法有误");
-        int minDist = new Matrix().minDist(1,2);
-        System.out.println("最短路径为" + minDist);
+//        int minDist = new Matrix().minDist(1,2);
+//        System.out.println("最短路径为" + minDist);
 
+//        LevenshteinDistance levenshteinDistance = new LevenshteinDistance();
+//        levenshteinDistance.backTracking(0, 0, 0);
+//        System.out.println("莱文斯坦距离为" + levenshteinDistance.minDist);
+//        int minDist = levenshteinDistance.dynamicProgramming();
+//        Assert.that(levenshteinDistance.minDist == minDist, "答案不同,dynamicProgramming有误");
+
+        LongestCommonSubstringLength longestCommonSubstringLength = new LongestCommonSubstringLength();
+        longestCommonSubstringLength.backTracking(0, 0, 0);
+        System.out.println("最长公共子串长度为" + longestCommonSubstringLength.maxCommonLength);
+        assert longestCommonSubstringLength.maxCommonLength == longestCommonSubstringLength.dynamicProgramming();
     }
+
+    /**
+     * 最长公共子串长度
+     */
+    static class LongestCommonSubstringLength {
+        private char[] a = "mitcmu".toCharArray();
+        private int n = a.length;
+        private char[] b = "mtacnu".toCharArray();
+        private int m = b.length;
+        private int maxCommonLength = Integer.MIN_VALUE; // 存储结果
+
+        /**
+         * 动态规划
+         * 状态转移公式为
+         * 当 a[i]==b[j] 时
+         * max_length[i][j] = max(max(max_length[i-1][j-1] + 1 ,max_length[i-1][j]),max_length[i][j-1])
+         * 当 a[i] != b[j] 时
+         * max_length[i][j] = max(max(max_length[i-1][j-1],max_length[i-1][j]),max_length[i][j-1])
+         *
+         * @return
+         */
+        public int dynamicProgramming() {
+            int[][] maxCommonLengthArray = new int[n][m];
+            // 判断第一个字符是否相同,如果相同,则距离为0,反之则为1
+            maxCommonLengthArray[0][0] = a[0] == b[0] ? 1 : 0;
+            for (int i = 1; i < n; i++) {
+                for (int j = 1; j < m; j++) {
+                    if (a[i] == b[j]) {
+                        maxCommonLengthArray[i][j] = Math.max(Math.max(maxCommonLengthArray[i - 1][j - 1] + 1, maxCommonLengthArray[i - 1][j]), maxCommonLengthArray[i][j - 1]);
+                    } else {
+                        maxCommonLengthArray[i][j] = Math.max(Math.max(maxCommonLengthArray[i - 1][j - 1], maxCommonLengthArray[i - 1][j]), maxCommonLengthArray[i][j - 1]);
+                    }
+                }
+            }
+            return maxCommonLengthArray[n - 1][m - 1];
+        }
+
+        /**
+         * 采用回溯算法获取最长公共子串长度
+         *
+         * @param i
+         * @param j
+         * @param maxLength
+         */
+        public void backTracking(int i, int j, int maxLength) {
+            if (i == n || j == m) {
+                if (maxLength > maxCommonLength) {
+                    maxCommonLength = maxLength;
+                }
+                return;
+            }
+            // 当字符相同时,maxLength长度+1,然后 i和j都同时+1往后继续对比两个字符串
+            if (a[i] == b[j]) {
+                backTracking(i + 1, j + 1, maxLength + 1);
+            } else {
+                // 当字符不相同时 有 增加和删除两种操作
+                // a延后一位
+                backTracking(i + 1, j, maxLength);
+                // b延后一位
+                backTracking(i, j + 1, maxLength);
+            }
+        }
+    }
+
+    /**
+     * 莱温斯坦距离
+     */
+    static class LevenshteinDistance {
+        private char[] a = "mitcmu".toCharArray();
+        private int n = a.length;
+        private char[] b = "mtacnu".toCharArray();
+        private int m = b.length;
+        private int minDist = Integer.MAX_VALUE; // 存储结果
+
+        /**
+         * 回溯算法
+         *
+         * @return
+         */
+        public void backTracking(int i, int j, int editDist) {
+            // 递归终止条件,只要其中任意一个字符串对比结束
+            if (i == n || j == m) {
+                // 其中有一个字符串已经对比结束了
+                if (i < n) {
+                    //代表j 字符串已对比结束,则可编辑距离为当前的编辑距离+i对应字符串剩余长度
+                    editDist += n - i;
+                }
+                if (j < m) {
+                    //代表i 字符串已对比结束,则可编辑距离为当前的编辑距离+i对应字符串剩余长度
+                    editDist += m - j;
+                }
+                // 获取最小的莱温斯坦距离
+                if (editDist < minDist) {
+                    minDist = editDist;
+                }
+                return;
+            }
+            // 当字符相同时,继续遍历下一个字符
+            if (a[i] == b[j]) {
+                // 编辑长度不变
+                backTracking(i + 1, j + 1, editDist);
+            } else {
+                // 将j后移一位,代表 删除b[j]或者a[i]前添加一个字符
+                backTracking(i, j + 1, editDist + 1);
+                // 将i后移一位, 代表 删除a[i] 或 b[j]前添加一个字符
+                backTracking(i + 1, j, editDist + 1);
+                // i和j同时都往后移,代表 a[i]替换b[j]的字符或b[j]替换a[i]的字符
+                backTracking(i + 1, j + 1, editDist + 1);
+            }
+
+        }
+
+        /**
+         * 动态规划
+         * (i,j)状态转化来源于 (i-1,j-1)/(i-1,j)/(i,j-1)三种状态
+         * 对于 min_dist(i,j)
+         * 当a[i] != b[j] 时 , min_dist(i,j) = min(min_dist(i-1,j),min(i,j-1),min(i-1,j-1)) + 1
+         * 当a[i] == b[j] 时 , min_dist(i,j) = min(min_dist(i-1,j)+1,min(i,j-1)+1,min(i-1,j-1))
+         * <p>
+         * a作为行,b作为列
+         */
+        public int dynamicProgramming() {
+            int[][] minDistArray = new int[n][m];
+            // 判断第一个字符是否相同,如果相同,则距离为0,反之则为1
+            minDistArray[0][0] = a[0] == b[0] ? 0 : 1;
+            // 初始化第一行数据
+            for (int i = 1; i < n; i++) {
+                minDistArray[0][i] = minDistArray[0][i - 1] + 1;
+            }
+            // 初始化第一列数据
+            for (int j = 1; j < m; j++) {
+                minDistArray[j][0] = minDistArray[j - 1][0] + 1;
+            }
+            for (int i = 1; i < n; i++) {
+                for (int j = 1; j < m; j++) {
+                    if (a[i] == b[j]) {
+                        minDistArray[i][j] = Math.min(Math.min(minDistArray[i - 1][j], minDistArray[i][j - 1]) + 1, minDistArray[i - 1][j - 1]);
+                    } else {
+                        minDistArray[i][j] = Math.min(Math.min(minDistArray[i - 1][j], minDistArray[i][j - 1]), minDistArray[i - 1][j - 1]) + 1;
+                    }
+                }
+            }
+            return minDistArray[n - 1][m - 1];
+        }
+    }
+
 
     /**
      * 棋盘最短路径
