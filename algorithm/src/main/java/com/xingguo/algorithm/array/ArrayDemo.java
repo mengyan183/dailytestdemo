@@ -20,6 +20,7 @@ public class ArrayDemo {
         // 预期结果为 4
         System.out.println(sentryFindByValue(intArray, 9));
         System.out.println(findByValue(intArray, 9));
+        test();
     }
 
     public static void test() {

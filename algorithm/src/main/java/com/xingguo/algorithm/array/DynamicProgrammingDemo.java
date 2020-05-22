@@ -36,38 +36,61 @@ public class DynamicProgrammingDemo {
 //        System.out.println("在不超过背包容量时塞入物品的最大价值为:" + maxValue);
 
 
-        int minDist = new Matrix().minDist();
+//        int minDist = new Matrix().minDist();
+//        System.out.println("最短路径为" + minDist);
+//        int minDistDP = new Matrix().minDistDP();
+//        Assert.that(minDist == minDistDP, "答案不同,minDist方法有误");
+        int minDist = new Matrix().minDist(1,2);
         System.out.println("最短路径为" + minDist);
-        int minDistDP = new Matrix().minDistDP();
-        Assert.that(minDist == minDistDP, "答案不同,minDist方法有误");
+
     }
 
+    /**
+     * 棋盘最短路径
+     */
     static class Matrix {
         // 一个4*4二维数组 每个位置的路径长度
         private int[][] pathArray = new int[][]{{1, 3, 5, 9}, {2, 1, 3, 4}, {5, 2, 6, 7}, {6, 8, 4, 3}};
-        // 矩阵的长度
+        // 矩阵的长度 二维数组
         private int length = 4;
-        // 矩阵的宽度
+        // 矩阵的宽度 一维数组
         private int width = 4;
 
-        // 获取 从[0][0] 到 [length][width]的最短路径
-        public int minDist() {
-            int[][] states = new int[length][width];
+        /**
+         * 指定棋盘位置 [0][0]到 [customI-1][customJ-1] 的最短路径
+         *
+         * @param customI 长度
+         * @param customJ 宽度
+         * @return
+         */
+        public int minDist(int customI, int customJ) {
+            if (!(customI > 0 && customI <= length)) {
+                customI = length;
+            }
+            if (!(customJ > 0 && customJ <= width)) {
+                customJ = width;
+            }
+            int[][] states = new int[customJ][customI];
             states[0][0] = pathArray[0][0];
             // 初始化第一行状态
-            for (int i = 1; i < length; i++) {
+            for (int i = 1; i < customI; i++) {
                 states[0][i] = states[0][i - 1] + pathArray[0][i];
             }
             // 初始化第一列状态
-            for (int j = 1; j < width; j++) {
+            for (int j = 1; j < customJ; j++) {
                 states[j][0] = states[j - 1][0] + pathArray[j][0];
             }
-            for (int i = 1; i < length; i++) {
-                for (int j = 1; j < width; j++) {
+            for (int i = 1; i < customI; i++) {
+                for (int j = 1; j < customJ; j++) {
                     states[i][j] = Math.min(states[i - 1][j], states[i][j - 1]) + pathArray[i][j];
                 }
             }
-            return states[length - 1][width - 1];
+            return states[customJ - 1][customI - 1];
+        }
+
+        // 获取 从[0][0] 到 [length][width]的最短路径
+        public int minDist() {
+            return minDist(length, width);
         }
 
         public int minDistDP() {
