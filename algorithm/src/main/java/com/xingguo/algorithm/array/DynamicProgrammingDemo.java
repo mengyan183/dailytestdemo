@@ -12,6 +12,7 @@ import sun.jvm.hotspot.utilities.Assert;
  * //TODO : 淘宝的“双十一”购物节有各种促销活动，比如“满 200 元减 50 元”。假设购物车中有 n 个（n>100）想买的商品，希望从里面选几个，在凑够满减条件的前提下，让选出来的商品价格总和最大程度地接近满减条件（200 元）
  * // TODO : https://time.geekbang.org/column/article/74788 杨辉三角问题
  * //TODO : 硬币问题 :假设我们有几种不同币值的硬币 v1，v2，……，vn（单位是元）。如果我们要支付 w 元，求最少需要多少个硬币。比如，我们有 3 种不同的硬币，1 元、3 元、5 元，我们要支付 9 元，最少需要 3 个硬币（3 个 3 元的硬币）
+ * // TODO : 我们有一个数字序列包含 n 个不同的数字，如何求出这个序列中的最长递增子序列长度？比如 2, 9, 3, 6, 5, 1, 7 这样一组数字序列，它的最长递增子序列就是 2, 3, 5, 7，所以最长递增子序列的长度是 4。
  *
  * @author guoxing
  * @date 2020/5/15 1:40 PM
@@ -52,7 +53,8 @@ public class DynamicProgrammingDemo {
         LongestCommonSubstringLength longestCommonSubstringLength = new LongestCommonSubstringLength();
         longestCommonSubstringLength.backTracking(0, 0, 0);
         System.out.println("最长公共子串长度为" + longestCommonSubstringLength.maxCommonLength);
-        assert longestCommonSubstringLength.maxCommonLength == longestCommonSubstringLength.dynamicProgramming();
+        int max = longestCommonSubstringLength.dynamicProgramming();
+        Assert.that(longestCommonSubstringLength.maxCommonLength == max, "答案不同,dynamicProgramming有误");
     }
 
     /**
@@ -69,7 +71,7 @@ public class DynamicProgrammingDemo {
          * 动态规划
          * 状态转移公式为
          * 当 a[i]==b[j] 时
-         * max_length[i][j] = max(max(max_length[i-1][j-1] + 1 ,max_length[i-1][j]),max_length[i][j-1])
+         * max_length[i][j] = max(max(max_length[i-1][j-1] ,max_length[i-1][j]),max_length[i][j-1])
          * 当 a[i] != b[j] 时
          * max_length[i][j] = max(max(max_length[i-1][j-1],max_length[i-1][j]),max_length[i][j-1])
          *
@@ -81,10 +83,11 @@ public class DynamicProgrammingDemo {
             maxCommonLengthArray[0][0] = a[0] == b[0] ? 1 : 0;
             for (int i = 1; i < n; i++) {
                 for (int j = 1; j < m; j++) {
+                    int max = Math.max(Math.max(maxCommonLengthArray[i - 1][j - 1], maxCommonLengthArray[i - 1][j]), maxCommonLengthArray[i][j - 1]);
                     if (a[i] == b[j]) {
-                        maxCommonLengthArray[i][j] = Math.max(Math.max(maxCommonLengthArray[i - 1][j - 1] + 1, maxCommonLengthArray[i - 1][j]), maxCommonLengthArray[i][j - 1]);
+                        maxCommonLengthArray[i][j] = max + 1;
                     } else {
-                        maxCommonLengthArray[i][j] = Math.max(Math.max(maxCommonLengthArray[i - 1][j - 1], maxCommonLengthArray[i - 1][j]), maxCommonLengthArray[i][j - 1]);
+                        maxCommonLengthArray[i][j] = max;
                     }
                 }
             }
