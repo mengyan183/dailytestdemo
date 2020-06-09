@@ -24,6 +24,8 @@ public class BoyerMooreDemo {
      * 5: 由于模式串的最佳后缀子串肯定属于模式串中的全部后缀子串的一种,因此可以先提前处理好模式串的全部后缀子串; 由于模式串的全部后缀子串的最后一个字符肯定都是相同的,因此只需要记录后缀子串的长度和模式串的最大索引值就可以确定一个模式串的后缀子串
      * 6: 使用suffix数组记录模式串截取掉后缀子串后,后缀子串在剩余子串中能够匹配的起始索引值,数组下标为后缀子串的长度
      *
+     * TODO : 只使用好后缀规则实现BM算法
+     *
      * @param mainString  主串
      * @param modelString 模式串
      * @return 最大移动位数
@@ -117,7 +119,7 @@ public class BoyerMooreDemo {
     /**
      * @param modelString 模式串
      * @param suffix      存储 模式串后缀子串在模式串截取掉当前后缀子串的剩余子串能完全匹配的起始索引位置,数组的下标为后缀子串的长度
-     * @param prefix
+     * @param prefix      存储的为模式串的后缀子串和前缀子串进行匹配,如果能够匹配则代表当前后缀子串存在匹配的前缀子串,
      */
     public void generateGoodSuffix(char[] modelString, int[] suffix, boolean[] prefix) {
         int length = modelString.length;
