@@ -9,6 +9,7 @@ import java.util.function.Consumer;
  * ArrayBlockingQueueDemo
  * {@link java.util.concurrent.ArrayBlockingQueue}
  * {@link com.lmax.disruptor.dsl.Disruptor}
+ * //TODO 通过加锁或cas来避免并发情况下,写入覆盖/重复消费的问题
  *
  * @author guoxing
  * @date 2020/6/19 4:58 PM
@@ -30,7 +31,7 @@ public class ArrayBlockingQueueDemo {
             if ((tail + 1) % size == head) {
                 return false;
             }
-            // tail代表空闲slot位置,tail肯定小于size
+            // tail代表空闲slot位置,tail肯定小于size;  当并发情况下由于赋值和tail指针移动非原子操作,因此会存在tail位置的数据被后续的数据覆盖,而tail移动了多次,造成了空slot
             data[tail] = element;
             // 避免tail 的大小超过size
             tail = (tail + 1) % size;
@@ -84,7 +85,7 @@ public class ArrayBlockingQueueDemo {
     }
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         CircleArrayQueue circleArrayQueue = new CircleArrayQueue(10);
         new Thread(() -> {
             Producer producer = new Producer(circleArrayQueue);
